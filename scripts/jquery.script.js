@@ -250,9 +250,12 @@ var view = {
 	
 	showTime: function(hours, minutes, seconds) {
 		var currentTimer = $('.timer');
+		var secs = seconds;
+		if (secs < 10) {
+		secs = "0"+secs;
+		} 
 		
-		
-		currentTimer.html(hours + ":" + minutes + ":" + seconds);
+		currentTimer.html(hours + ":" + minutes + ":" + secs);
 		
 	}
 
