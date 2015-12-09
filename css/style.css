@@ -1,0 +1,61 @@
+.pause-button {
+	display: none;
+}
+.btn {margin: 1em;}
+.start-button {
+	display: inline-block;
+
+}
+#timer {
+	margin: 0 auto;
+}
+.input {
+	min-width: 46px;
+	font-size: 24px;
+}
+.button-container {
+	display: -webkit-flex;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-justify-content: center;
+	    -ms-flex-pack: center;
+	        justify-content: center;
+}
+.clearfix {
+	clear: both;
+}
+
+@media (max-width: 325px) {
+	.input-group {
+		display: block;
+	}
+	.input-group-addon:first-child, .input-group-addon:not(:first-child):not(:last-child) {
+		border: 1px solid #ccc;
+		border-top-left-radius: 4px;
+		border-top-right-radius: 4px;
+	}
+	.input-group .form-control:last-child {
+		border-radius: 0;
+	}
+	.container {
+		padding-right: 5px;
+		padding-left: 5px;
+	}
+	.button-container {
+		-webkit-flex-direction: column;
+		    -ms-flex-direction: column;
+		        flex-direction: column;
+	}
+
+	.col-xs-12 {
+		padding-right: 0;
+		padding-left: 0;
+		
+	}
+
+}
+body {
+	font-family: monospace;
+	font-size: 16px;
+}
+

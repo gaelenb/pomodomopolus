@@ -1,0 +1,87 @@
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<script type='text/javascript' src="scripts/jquery.min.js"></script>
+    <title>Template</title>
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css"></link>
+
+    <link rel='stylesheet' id='main_css-css' href='css/style.css' type='text/css' media='all' />
+
+
+     
+
+
+<!-- <link rel='canonical' href='index.html' />
+<link rel='shortlink' href='index.html' /> -->
+
+</head>
+
+<body>
+    
+<section class="app container-fluid">
+	<div class="row"><h2 onclick="controller.timerInit()" class="timer text-center work-time"></h2>
+
+
+<form id="timer" class="container ">
+	
+	<div class="col-xs-12">
+         <label class="col-xs-12 control-label" for="break-time">Vacation time</label>
+      <div class="input-group">
+        
+        <span class="input-group-addon">Hours</span>
+        <input size=20 maxlength=2 onkeypress="return isNumberKey(event)" id="break-time-hours" class="break-time col-xs-3 input form-control" value="" type="textbox" />
+
+         <span class="input-group-addon">Minutes</span>
+
+            <input size=20 maxlength=2 onkeypress="return isNumberKey(event)" id="break-time-minutes" class="break-time col-xs-3 input form-control" value="" type="textbox" />
+     </div>
+    </div>
+
+ 
+	<div class="col-xs-12">
+        <label class="col-xs-12 control-label" for="work-time">Work time</label>
+        
+        <div class="input-group">
+            
+            <span class="input-group-addon">Hours</span>
+            
+            <input size=20 maxlength=2 id="work-time-hours" onkeypress="return isNumberKey(event)" class="work-time col-xs-6 input form-control" value="" type="textbox" />
+            
+            
+            <span class="input-group-addon">Minutes</span>
+
+            <input size=20 maxlength=2 onkeypress="return isNumberKey(event)" id="work-time-minutes" class="work-time col-xs-6 input form-control" value="" type="textbox" />
+
+        </div>
+    </div>
+
+<div class="container col-xs-12">
+<div class="button-container">
+	<button class="start-button btn btn-lg btn-success col-sm-3" type="button">Start</button>
+    <button class="col-sm-3 pause-button btn btn-lg btn-warning" type="button">Pause</button>
+    <button class="col-sm-3 reset-button btn btn-lg btn-info" type="button">Reset</button>
+    <span class="clearfix"></span>
+    </div>
+    </div>
+</form>
+</section>
+
+<script type="text/javascript" src="scripts/jquery.script.js"></script>
+<script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
+
+
+  </body>
+
+
+</html>
