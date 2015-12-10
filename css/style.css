@@ -50,9 +50,28 @@
 	.col-xs-12 {
 		padding-right: 0;
 		padding-left: 0;
-		
+
 	}
 
+}
+.text {
+	text-align: center;
+}
+
+.cover {
+	position: absolute;
+	opacity: 0;
+	width: 100%;
+	height: 100%;
+
+	transition: opacity 2s, background-color 2s;
+
+}
+
+.hidden {
+	display: none;
+	opacity: 0;
+	transition: 1s;
 }
 body {
 	font-family: monospace;

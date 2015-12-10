@@ -72,6 +72,7 @@ var controller = {
 			currentTimerIs.workTime = true;
 			view.currentTimer();
 		}
+
 	},
 	set: {
 		
@@ -125,7 +126,12 @@ var controller = {
 		},
 
 		currentTime: function() {
+			
 			return model.getCurrentTime();
+		},
+		currentInterval: function() {
+			var interval = (model.currentTimer.workTime) ? "work" : "break";
+			return	interval;
 		},
 
 		currentTimerAmount: function() {
@@ -199,6 +205,7 @@ var controller = {
 				controller.pause();
 				controller.reset();
 				controller.timerInit();
+				view.changeText('.text', 'Taking a ', '');
 				return;	
 			} 
 			var hoursLeft = set.toHours(msLeft);
@@ -219,7 +226,7 @@ var controller = {
 		//Probably a bad use of this... 
 		// but needed it to have access to tickTock
 		this.pause = function() {
-			console.log(model.currentTimer.minutesLeft);
+			
 		
 		clearInterval(tickTock);
 		};
@@ -235,28 +242,38 @@ console.log(controller);
 var view = {
 
 	currentTimer: function() {
-		var timer = $('.timer');
+		var timer = $('.cover');
 		var isWorkTimer = model.currentTimer.workTime;
 		
 			if (isWorkTimer) {
-				timer.addClass('work-time');
-				timer.removeClass('break-time');
+				timer.css({"background-color" : "#5cb85c", opacity: '0.4'});
+
 			} else {
-				timer.addClass('break-time');
-				timer.removeClass('work-time');
+				timer.css({"background-color" : "#5bc0de", opacity: '0.4'});
+
 			}
 	},
 
 	
 	showTime: function(hours, minutes, seconds) {
 		var currentTimer = $('.timer');
-		var secs = seconds;
-		if (secs < 10) {
-		secs = "0"+secs;
-		} 
+		var time = [hours, minutes, seconds];
+		for (var i = 0; i < time.length; i++) {
+			time[i] = (time[i] >= 10 ) ? time[i] : "0" + time[i]; 
+		}
+
+
+		// if (secs < 10) {
+		// secs = "0"+secs;
+		// } 
 		
-		currentTimer.html(hours + ":" + minutes + ":" + secs);
+		currentTimer.html(time[0] + ":" + time[1] + ":" + time[2]);
 		
+	},
+
+	changeText: function(node, textBefore, textAfter) {
+		var currentInterval = controller.get.currentInterval();
+		$(node).html(textBefore + currentInterval + textAfter);
 	}
 
 };
@@ -286,33 +303,40 @@ init();
 
 
 $('.start-button').click(function() {
-$(this).css('display', 'none');
-$('.pause-button').css('display', 'inline-block');
+	$(this).css('display', 'none');
+	$('.pause-button').css('display', 'inline-block');
 
-
-controller.timerInit();
+	view.currentTimer();
+	view.changeText('.text', 'Your ', ' timer has begun' );
+	controller.timerInit();
 
 
 });
 
 $('.pause-button').click(function() {
-$(this).css('display', 'none');
-$('.start-button').css('display', 'inline-block');
-controller.pause();
+	$(this).css('display', 'none');
+	$('.start-button').css('display', 'inline-block');
+	$('.cover').css({opacity: '.6'});
+
+	controller.pause();
+
+	view.changeText('.text', 'Your ', ' timer is paused');
 });
 
 $('.reset-button').click(function() {
 	$('.start-button').css('display', 'inline-block');
 	$('.pause-button').css('display', 'none');
+	$('.cover').css({opacity: '0'});
 	controller.pause();
 	// Semi redundant conditional check
 	if (model.currentTimer.breakTime) {
 		controller.toggleTimer();
 	}
 	controller.reset();
+	view.changeText('.text', 'Ready to get back to ', '?');
 	var currentTimers = controller.get.currentTimerAmount();
 
-	view.showTime(currentTimers.hoursLeft, currentTimers.minutesLeft, '00');
+	view.showTime(currentTimers.hoursLeft, currentTimers.minutesLeft, 0);
 });
 
 
