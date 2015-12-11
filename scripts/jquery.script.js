@@ -23,12 +23,16 @@ var model = {
 			}
 	},
 
+	audioOn: false,
+
 	currentTimer: {
 		workTime: true,
 		breakTime: false,
 		hoursLeft: 0,
 		minutesLeft: undefined	
 	},
+
+
 
 
 
@@ -75,6 +79,19 @@ var controller = {
 		}
 
 	},
+
+	toggleAudio: function() {
+		// =/
+		model.audioOn = (true) ? false : true;
+		this.toggleAudioText(model.audioOn);
+		console.log('toggleAudio evaluated to' + model.audioOn);
+	},
+
+	toggleAudioText: function(arg) {
+		var text = (arg) ? "Disabled" : "Enabled";
+		console.log('toggleAudio');
+		view.changeAudioText(text);
+	},
 	set: { 
 		 newTime: function(futureMs) {
 			var fMs = futureMs;
@@ -83,6 +100,7 @@ var controller = {
 			var msLeft = 1*fMs - tmpTime; 
 			
 			if (msLeft < 0) {
+				if (model.audioOn) controller.playAudio();
 				controller.toggleTimer();
 				controller.set.pause();
 				controller.reset();
@@ -102,6 +120,7 @@ var controller = {
 		
 
 		},
+
 		pause: undefined,
 		workTime: function(hours, minutes) {
 		$('#work-time-hours').val(hours);
@@ -181,7 +200,9 @@ var controller = {
 		},
 		
 	},
-	
+		playAudio: function() {
+			$('#ding').trigger('play');
+		},
 	reset: function() {
 
 		model.currentTimer.minutesLeft = undefined;
@@ -305,8 +326,18 @@ var view = {
 		view.changeText('.text', 'Your ', ' timer is paused');
 	},
 
-};
+	add: function() {
 
+		$('#ding').attr('src', 'ding.mp3');
+	},
+
+	changeAudioText: function(text) {
+		$('.audio').eq(0).html("<h4>Audio alerts: " + text + "</h4>");
+	} 
+
+
+
+};
 
 
 // On page load init should call controller to get initial
@@ -362,7 +393,8 @@ $('body').on('keydown keyup', function(e) {
 
     });
 
-
+//Controls 
+	//for timer
 
 $('.start-button').click(function() {
 	
@@ -377,7 +409,24 @@ $('.reset-button').click(function() {
 	view.reset();
 });
 
+	//for audio
 
+$('.audio').click(function() {
+	console.log($('#ding').attr("src"));
+	if ($('#ding').attr("src") !== "ding.mp3"){
+		view.add();
+	}
+
+
+	controller.toggleAudio();
+	
+
+});
+
+
+
+
+//Prevent typing anything other than letters when using textbox
 function isNumberKey(e){
     var evt = e,
     charCode = (evt.which) ? evt.which : evt.keyCode;
