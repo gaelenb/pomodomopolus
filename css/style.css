@@ -105,7 +105,9 @@
 	padding-left: 0;
 	margin: 1.5em 0
 }
-
+.button-pressed {
+	border: 3px inset #ffe;
+}
 
 body {
 	font-family: monospace;

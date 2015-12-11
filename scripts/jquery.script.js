@@ -6,7 +6,8 @@
 // 		add work-time to it -- addTime function
 //		calculate differnece between sum and current time
 //			print this value to timer div 
-
+(function() {
+	"use strict";
 var model = {
 		inputValues: {
 			workTime: {
@@ -74,8 +75,34 @@ var controller = {
 		}
 
 	},
-	set: {
+	set: { 
+		 newTime: function(futureMs) {
+			var fMs = futureMs;
+			var tmpTime = controller.get.currentTime();
+			console.log(futureMs);
+			var msLeft = 1*fMs - tmpTime; 
+			
+			if (msLeft < 0) {
+				controller.toggleTimer();
+				controller.set.pause();
+				controller.reset();
+				controller.timerInit();
+				view.changeText('.text', 'Taking a ', '');
+				return;	
+			} 
+			var set = controller.set;
+			var hoursLeft = set.toHours(msLeft);
+			var minutesLeft = set.toMinutes(msLeft);
+			var secondsLeft = set.remainingSeconds(msLeft) + 1;
+
+			view.showTime(hoursLeft, minutesLeft, secondsLeft);
+			model.currentTimer.hoursLeft = set.toHours(msLeft);
+			model.currentTimer.minutesLeft =  parseFloat(msLeft/60/1000) % 60;
+			
 		
+
+		},
+		pause: undefined,
 		workTime: function(hours, minutes) {
 		$('#work-time-hours').val(hours);
 		$('#work-time-minutes').val(minutes);
@@ -155,18 +182,6 @@ var controller = {
 		
 	},
 	
-	// function for timerInit
-	//Need to find which timer should be active = activeTimer
-	// get the amount of time set for that timer = amountOfTime
-	// get the current time = currentTIme
-	// change currentTime to minutes & seconds = minutes; seconds; 
-	// add amountOfTime to minutes = futureMinutes + futureSeconds *Constants
-		// function newTime 
-		// get currentTime = currentTime
-		// change currentTime to minutes & seconds = currentMinutes + currentSeconds
-		// subtract currentMinutes & currentSeconds from futureMInutes & futureSeconds = minutesLeft & secondsLeft
-		// view.showTime(minutesLeft, secondsLeft)
-
 	reset: function() {
 
 		model.currentTimer.minutesLeft = undefined;
@@ -185,50 +200,27 @@ var controller = {
 		var hours = currentTimerAmount.hoursLeft; 
 		var minutes = currentTimerAmount.minutesLeft; 
 
-		console.log(hours + ":" + minutes);
+
 		currentTimerAmount.minutesLeft = set.hoursToMinutes(hours) + 1*minutes;
-		console.log(currentTimerAmount.minutesLeft);
-		currentTimerMs = set.toMs(currentTimerAmount.minutesLeft);
+
+		var currentTimerMs = set.toMs(currentTimerAmount.minutesLeft);
 		
 		
 		//cached current time
 		var futureMs = get.currentTime() + currentTimerMs;
-
-
-		var newTime = function newTime() {
-			var tmpTime = get.currentTime();
-
-			var msLeft = futureMs - tmpTime; 
-			
-			if (msLeft < 0) {
-				controller.toggleTimer();
-				controller.pause();
-				controller.reset();
-				controller.timerInit();
-				view.changeText('.text', 'Taking a ', '');
-				return;	
-			} 
-			var hoursLeft = set.toHours(msLeft);
-			var minutesLeft = set.toMinutes(msLeft);
-			var secondsLeft = set.remainingSeconds(msLeft) + 1;
-
-			view.showTime(hoursLeft, minutesLeft, secondsLeft);
-			model.currentTimer.hoursLeft = set.toHours(msLeft);
-			model.currentTimer.minutesLeft =  parseFloat(msLeft/60/1000) % 60;
-			
-			console.log(model.currentTimer.minutesLeft);
-			console.log(model.currentTimer.hoursLeft);
-
-		};
-
-		var tickTock = setInterval(newTime, 1000);
 		
-		//Probably a bad use of this... 
-		// but needed it to have access to tickTock
-		this.pause = function() {
-			
+		console.log(futureMs+ " in init");
+
+
+		set.tick = function(){set.newTime(futureMs);};
+		console.log(set.tick);
+		set.tickTock = setInterval(set.tick, 1000);
 		
-		clearInterval(tickTock);
+		
+
+		set.pause = function() {
+			console.log("pause fired");
+		clearInterval(controller.set.tickTock);
 		};
 
 
@@ -237,7 +229,7 @@ var controller = {
 	
 };
 
-console.log(controller);
+
 
 var view = {
 
@@ -274,7 +266,44 @@ var view = {
 	changeText: function(node, textBefore, textAfter) {
 		var currentInterval = controller.get.currentInterval();
 		$(node).html(textBefore + currentInterval + textAfter);
+	},
+	reset: function() {
+		$('.start-button').css('display', 'inline-block');
+		$('.pause-button').css('display', 'none');
+		$('.cover').css({opacity: '0'});
+		if (typeof controller.set.pause !== "undefined" ) {
+		controller.set.pause();
 	}
+		// Semi redundant conditional check
+		if (model.currentTimer.breakTime) {
+			controller.toggleTimer();
+		}
+		controller.reset();
+		view.changeText('.text', 'Ready to get back to ', '?');
+		var currentTimers = controller.get.currentTimerAmount();
+
+		view.showTime(currentTimers.hoursLeft, currentTimers.minutesLeft, 0);
+	},
+	started: function() {
+		$('.start-button').css('display', 'none');
+		$('.pause-button').css('display', 'inline-block');
+
+		view.currentTimer();
+		view.changeText('.text', 'Your ', ' timer has begun' );
+		controller.timerInit();
+
+	},
+	paused: function() {
+		$(".pause-button").css('display', 'none');
+		$('.start-button').css('display', 'inline-block');
+		$('.cover').css({opacity: '.6'});
+
+		if (typeof controller.set.pause !== "undefined" ) {
+		console.log('helloooo!?');
+		controller.set.pause();
+	}
+		view.changeText('.text', 'Your ', ' timer is paused');
+	},
 
 };
 
@@ -291,61 +320,75 @@ var init = function() {
 	var inputValues = model.inputValues;
 	set.breakTime(inputValues.breakTime.hours, inputValues.breakTime.minutes);
 	set.workTime(inputValues.workTime.hours, inputValues.workTime.minutes);
-
+	controller.pause = undefined;
 	view.showTime(0, 25, 0);
 };
 
 $(document).ready(function () {
 init();	
 
+
+
 });
+
+$('body').on('keydown keyup', function(e) {
+
+      var keyAction = {
+
+        82  : ['.reset-button', view.reset ],  // R key
+        83  : ['.start-button', view.started ], // S key
+        80  : ['.pause-button', view.paused ]  // P key
+        
+      },
+          key = e.which,              
+          keyArr = keyAction[key],  
+          element,
+          method;
+
+
+			function go (input){
+  			 	return input();
+  			 }
+      
+      if(typeof keyArr !== "undefined"){
+         element  = keyArr[0]; 
+		method = keyArr[1]; 
+    console.log(method);
+  		method();
+
+         $(element).toggleClass('button-pressed');
+      }
+
+
+    });
 
 
 
 $('.start-button').click(function() {
-	$(this).css('display', 'none');
-	$('.pause-button').css('display', 'inline-block');
-
-	view.currentTimer();
-	view.changeText('.text', 'Your ', ' timer has begun' );
-	controller.timerInit();
-
-
+	
+	view.started();
 });
 
 $('.pause-button').click(function() {
-	$(this).css('display', 'none');
-	$('.start-button').css('display', 'inline-block');
-	$('.cover').css({opacity: '.6'});
-
-	controller.pause();
-
-	view.changeText('.text', 'Your ', ' timer is paused');
+	view.paused();
 });
 
 $('.reset-button').click(function() {
-	$('.start-button').css('display', 'inline-block');
-	$('.pause-button').css('display', 'none');
-	$('.cover').css({opacity: '0'});
-	controller.pause();
-	// Semi redundant conditional check
-	if (model.currentTimer.breakTime) {
-		controller.toggleTimer();
-	}
-	controller.reset();
-	view.changeText('.text', 'Ready to get back to ', '?');
-	var currentTimers = controller.get.currentTimerAmount();
-
-	view.showTime(currentTimers.hoursLeft, currentTimers.minutesLeft, 0);
+	view.reset();
 });
 
 
-function isNumberKey(evt){
-    var charCode = (evt.which) ? evt.which : evt.keyCode;
+function isNumberKey(e){
+    var evt = e,
+    charCode = (evt.which) ? evt.which : evt.keyCode;
     if (charCode > 31 && (charCode < 48 || charCode > 57))
         return false;
     return true;
 }
 
+$('.input').keydown(isNumberKey);
+
+
+})();
 
 
