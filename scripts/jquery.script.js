@@ -22,6 +22,7 @@ var model = {
 
 			}
 	},
+	timerOn: false,
 
 	audioIs: "Disabled",
 
@@ -86,24 +87,24 @@ var controller = {
 
 		model.audioIs = (model.audioIs==="Enabled") ? "Disabled" : "Enabled";
 		this.toggleAudioText(model.audioIs);
-		console.log('toggleAudio evaluated to' + model.audioIs);
+
 	},
 
 	toggleAudioText: function(arg) {
 		var text = arg;
-		console.log(text);
+
 		view.changeAudioText(text);
 	},
 	set: { 
 		 newTime: function(futureMs) {
 			var fMs = futureMs;
 			var tmpTime = controller.get.currentTime();
-			console.log(futureMs);
+			
 			var msLeft = 1*fMs - tmpTime; 
 			
 			if (msLeft < 0) {
-				console.log(model.audioOn);
-				if (model.audioIs === "Enabled") controller.playAudio();
+
+				if (model.audioIs === "Enabled") {controller.playAudio();}
 				controller.toggleTimer();
 				controller.set.pause();
 				controller.reset();
@@ -210,14 +211,18 @@ var controller = {
 
 		model.currentTimer.minutesLeft = undefined;
 		model.currentTimer.hoursLeft = 0;
+		model.timerOn = false;
 	},
 
 	timerInit: function() {
 
-		
-
+		if (model.timerOn) {
+			return;
+		}
+		model.timerOn = true;
 		var get = controller.get;
 		var set = controller.set;
+		//If there's a cached value of minutes left use that otherwise use the current time
 		var currentTimerAmount = (model.currentTimer.minutesLeft === undefined) ? get.currentTimerAmount() : model.currentTimer;
 
 		
@@ -233,18 +238,20 @@ var controller = {
 		//cached current time
 		var futureMs = get.currentTime() + currentTimerMs;
 		
-		console.log(futureMs+ " in init");
+
 
 
 		set.tick = function(){set.newTime(futureMs);};
-		console.log(set.tick);
+
 		set.tickTock = setInterval(set.tick, 1000);
 		
 		
 
 		set.pause = function() {
-			console.log("pause fired");
+
+
 		clearInterval(controller.set.tickTock);
+		model.timerOn = false;
 		};
 
 
@@ -323,7 +330,7 @@ var view = {
 		$('.cover').css({opacity: '.6'});
 
 		if (typeof controller.set.pause !== "undefined" ) {
-		console.log('helloooo!?');
+
 		controller.set.pause();
 	}
 		view.changeText('.text', 'Your ', ' timer is paused');
@@ -365,7 +372,7 @@ init();
 
 });
 
-$('body').on('keydown keyup', function(e) {
+$('body').on('keydown', function(e) {
 
       var keyAction = {
 
@@ -378,7 +385,7 @@ $('body').on('keydown keyup', function(e) {
           keyArr = keyAction[key],  
           element,
           method;
-
+          console.log(key);
 
 			function go (input){
   			 	return input();
@@ -387,10 +394,10 @@ $('body').on('keydown keyup', function(e) {
       if(typeof keyArr !== "undefined"){
          element  = keyArr[0]; 
 		method = keyArr[1]; 
-    console.log(method);
+
   		method();
 
-         $(element).toggleClass('button-pressed');
+
       }
 
 
@@ -415,7 +422,7 @@ $('.reset-button').click(function() {
 	//for audio
 
 $('.audio').click(function() {
-	console.log($('#ding').attr("src"));
+
 	if ($('#ding').attr("src") !== "ding.mp3"){
 		view.add();
 	}
