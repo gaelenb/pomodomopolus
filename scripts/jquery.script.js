@@ -372,7 +372,7 @@ var view = {
           keyArr = keyAction[key],  
           element,
           method;
-          console.log(key);
+
 
 			// function go (input){
   	// 		 	return input();
