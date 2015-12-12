@@ -83,10 +83,21 @@ var controller = {
 	},
 
 	toggleAudio: function() {
+		if ($('#ding').attr("src") !== "ding.mp3"){
+		view.add();
+	}	
+		var audioIsEnabled = model.audioIs==="Enabled";
+		model.audioIs = (audioIsEnabled) ? "Disabled" : "Enabled";
 
+		if (audioIsEnabled) {
+			model.audioIs = "Disabled";
+			view.disableCheckBox();
+		} else {
+			model.audioIs = "Enabled";
+			view.enableCheckBox();
+		}
 
-		model.audioIs = (model.audioIs==="Enabled") ? "Disabled" : "Enabled";
-		this.toggleAudioText(model.audioIs);
+		controller.toggleAudioText(model.audioIs);
 
 	},
 
@@ -343,8 +354,45 @@ var view = {
 
 	changeAudioText: function(text) {
 		$('.audio').eq(0).html("<h4>Audio alerts: " + text + "</h4>");
-	} 
 
+
+
+	}, 
+
+	keyControl: function(e) {
+		   var keyAction = {
+//Class selectors remnant of previous function-- may use later
+        71  : ['.reset-button', view.reset ],  // g key
+        83  : ['.start-button', view.started ], // S key
+        80  : ['.pause-button', view.paused ],  // P key
+        76 : [undefined, controller.toggleAudio ],
+        
+      },
+          key = e.which,              
+          keyArr = keyAction[key],  
+          element,
+          method;
+          console.log(key);
+
+			// function go (input){
+  	// 		 	return input();
+  	// 		 }
+      
+      if(typeof keyArr !== "undefined"){
+         element  = keyArr[0]; 
+		method = keyArr[1]; 
+
+  		method();
+      }
+  },
+
+  	disableCheckBox: function() {
+  		$('.audio').eq(1).prop('checked', false);
+  	},
+
+  	enableCheckBox: function() {
+  		$('.audio').eq(1).prop('checked', true);
+  	}
 
 
 };
@@ -374,32 +422,7 @@ init();
 
 $('body').on('keydown', function(e) {
 
-      var keyAction = {
-
-        82  : ['.reset-button', view.reset ],  // R key
-        83  : ['.start-button', view.started ], // S key
-        80  : ['.pause-button', view.paused ]  // P key
-        
-      },
-          key = e.which,              
-          keyArr = keyAction[key],  
-          element,
-          method;
-          console.log(key);
-
-			function go (input){
-  			 	return input();
-  			 }
-      
-      if(typeof keyArr !== "undefined"){
-         element  = keyArr[0]; 
-		method = keyArr[1]; 
-
-  		method();
-
-
-      }
-
+   view.keyControl(e);
 
     });
 
@@ -423,11 +446,6 @@ $('.reset-button').click(function() {
 
 $('.audio').click(function() {
 
-	if ($('#ding').attr("src") !== "ding.mp3"){
-		view.add();
-	}
-
-
 	controller.toggleAudio();
 	
 
@@ -435,13 +453,18 @@ $('.audio').click(function() {
 
 
 
-
+//71 83 80 76 if (charCode ===  )
 //Prevent typing anything other than letters when using textbox
 function isNumberKey(e){
+    
+
     var evt = e,
     charCode = (evt.which) ? evt.which : evt.keyCode;
-    if (charCode > 31 && (charCode < 48 || charCode > 57))
+
+    if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+        view.keyControl(evt);
         return false;
+    }
     return true;
 }
 
