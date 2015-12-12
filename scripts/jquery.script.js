@@ -23,7 +23,8 @@ var model = {
 			}
 	},
 
-	audioOn: false,
+	audioIs: "Disabled",
+
 
 	currentTimer: {
 		workTime: true,
@@ -81,15 +82,16 @@ var controller = {
 	},
 
 	toggleAudio: function() {
-		// =/
-		model.audioOn = (true) ? false : true;
-		this.toggleAudioText(model.audioOn);
-		console.log('toggleAudio evaluated to' + model.audioOn);
+
+
+		model.audioIs = (model.audioIs==="Enabled") ? "Disabled" : "Enabled";
+		this.toggleAudioText(model.audioIs);
+		console.log('toggleAudio evaluated to' + model.audioIs);
 	},
 
 	toggleAudioText: function(arg) {
-		var text = (arg) ? "Disabled" : "Enabled";
-		console.log('toggleAudio');
+		var text = arg;
+		console.log(text);
 		view.changeAudioText(text);
 	},
 	set: { 
@@ -100,7 +102,8 @@ var controller = {
 			var msLeft = 1*fMs - tmpTime; 
 			
 			if (msLeft < 0) {
-				if (model.audioOn) controller.playAudio();
+				console.log(model.audioOn);
+				if (model.audioIs === "Enabled") controller.playAudio();
 				controller.toggleTimer();
 				controller.set.pause();
 				controller.reset();
